@@ -46,10 +46,11 @@ public class HotelController {
     }
     // Actualizar - Actualizar registro de hotel
     @PostMapping ("/actualizar/{id}")
-    public ResponseEntity<Hoteles> actualizarHotel(@RequestBody Hoteles cambio){
-        if(!hotelJPA.existsById(cambio.getId_hotel())){
+    public ResponseEntity<Hoteles> actualizarHotel(@RequestBody Hoteles cambio,@PathVariable Integer id){
+        if(!hotelJPA.existsById(id)){
             return ResponseEntity.notFound().build();
         }else{
+            cambio.setId_hotel(id);
             Hoteles cambioHotel = hotelJPA.save(cambio);
             return  ResponseEntity.status(HttpStatus.CREATED).body(cambioHotel);
         }
@@ -57,11 +58,11 @@ public class HotelController {
     // Eliminar - Eliminar un registro de hotel por id
     @DeleteMapping  ("/eliminar/{id}")
     public ResponseEntity<Hoteles> borrarHotel(@PathVariable Integer id){
-        if(!hotelJPA.existsById(id)){
+        if(hotelJPA.existsById(id)){
             hotelJPA.deleteById(id);
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         }else{
-            return  ResponseEntity.noContent().build();
+            return  ResponseEntity.notFound().build();
         }
     }
 }

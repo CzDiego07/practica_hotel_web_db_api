@@ -49,10 +49,11 @@ public class TipoHabController {
 
     // Actualizar - Actualizar registro de hotel
     @PostMapping("/actualizar/{id}")
-    public ResponseEntity<Tipo_Habitacion> actualizarTipoHabitacion(@RequestBody Tipo_Habitacion cambio) {
-        if (!tipoJPA.existsById(cambio.getId_tipo())) {
+    public ResponseEntity<Tipo_Habitacion> actualizarTipoHabitacion(@RequestBody Tipo_Habitacion cambio, @PathVariable Integer id) {
+        if (!tipoJPA.existsById(id)) {
             return ResponseEntity.notFound().build();
         } else {
+            cambio.setId_tipo(id);
             Tipo_Habitacion cambioTipoHabitacion = tipoJPA.save(cambio);
             return ResponseEntity.status(HttpStatus.CREATED).body(cambioTipoHabitacion);
         }
@@ -61,11 +62,11 @@ public class TipoHabController {
     // Eliminar - Eliminar un registro de hotel por id
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<Tipo_Habitacion> borrarTipoHabitacion(@PathVariable Integer id) {
-        if (!tipoJPA.existsById(id)) {
+        if (tipoJPA.existsById(id)) {
             tipoJPA.deleteById(id);
-            return ResponseEntity.notFound().build();
-        } else {
             return ResponseEntity.noContent().build();
+        }else{
+            return  ResponseEntity.notFound().build();
         }
     }
 }
