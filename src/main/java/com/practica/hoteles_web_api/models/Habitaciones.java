@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Habitaciones")
+@Table(name = "Habitaciones",
+        // Se agrega unique Constrains para evitar habitaciones con el mismo numero en
+        // un solo hotel
+        // Ejemplo
+        // Hotel Id, numero de habitacion.
+        // 1, 101 ----- Permitido
+        // 2, 101 ----- Permitido
+        // 2, 101 ----- Denegado, ya existe esta combinación
+        uniqueConstraints = {
+                @UniqueConstraint(name = "UK_hotel_numero_habitacion", columnNames = { "id_hotel", "numero" })
+        })
 @Getter
 @Setter
 @NoArgsConstructor
