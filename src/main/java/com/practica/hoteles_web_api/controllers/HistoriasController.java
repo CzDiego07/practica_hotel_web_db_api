@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.practica.hoteles_web_api.dtos.OfertaHabitacionesForHotel;
+import com.practica.hoteles_web_api.dtos.cantidadHabitacionesByTipo;
 import com.practica.hoteles_web_api.dtos.habitacionByEstado;
 import com.practica.hoteles_web_api.models.Enum_EstadoHab;
 import com.practica.hoteles_web_api.repository.habitacionRepository;
@@ -42,8 +43,16 @@ public class HistoriasController {
     // 3. Historia: Como gerente de la cadena, quiero consultar las habitaciones de
     // cada hotel junto con su tipo y capacidad,
     // para conocer la oferta de habitaciones unicamente de las disponibles
-    @GetMapping ("/oferta/disponibles")
-    public List<OfertaHabitacionesForHotel> obtenerOfertaHabitacionHotelPorEstado(){
+    @GetMapping("/oferta/disponibles")
+    public List<OfertaHabitacionesForHotel> obtenerOfertaHabitacionHotelPorEstado() {
         return habitacionJPA.getOfertaHabitacionesForHotel(Enum_EstadoHab.Disponible);
+    }
+
+    // 4. Historia: Como gerente de la cadena, quiero consultar la cantidad de
+    // habitaciones por tipo y a que hotel pertenecen
+    // para conocer que tipos de habitaciones se tienen en cada hotel
+    @GetMapping ("/cantidad")
+    public List<cantidadHabitacionesByTipo> obtenerCantidadHabitacionesPorTipo(){
+        return habitacionJPA.getCantidadHabitacionesByTipo();
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.practica.hoteles_web_api.dtos.OfertaHabitacionesForHotel;
+import com.practica.hoteles_web_api.dtos.cantidadHabitacionesByTipo;
 import com.practica.hoteles_web_api.dtos.habitacionByEstado;
 import com.practica.hoteles_web_api.models.Enum_EstadoHab;
 import com.practica.hoteles_web_api.models.Habitaciones;
@@ -67,4 +68,16 @@ public interface habitacionRepository extends JpaRepository<Habitaciones, Intege
                     "ORDER BY h.nombre, ha.numero"
     )
     List<OfertaHabitacionesForHotel> getOfertaHabitacionesForHotel(@Param("estado") Enum_EstadoHab estado);
+
+    // Consulta para saber la cantidad de habitaciones que se tienen por Tipo en cada hotel
+            @Query("SELECT " +
+                        "h.nombre AS hotel, " +
+                        "t.nombre AS tipo, " +
+                        "COUNT(ha) AS cantidad " +
+                        "FROM Habitaciones ha " +
+                        "INNER JOIN ha.hotel h " +
+                        "INNER JOIN ha.tipo t " +
+                        "GROUP BY h.id_hotel, h.nombre, t.id_tipo, t.nombre " +
+                        "ORDER BY h.nombre ASC, t.nombre ASC")
+        List<cantidadHabitacionesByTipo> getCantidadHabitacionesByTipo();
 }
