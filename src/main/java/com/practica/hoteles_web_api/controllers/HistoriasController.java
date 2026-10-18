@@ -38,4 +38,12 @@ public class HistoriasController {
     public List<OfertaHabitacionesForHotel> obtenerOfertaHabitacionHotel() {
         return habitacionJPA.getOfertaHabitacionesForHotel();
     }
+
+    // 3. Historia: Como gerente de la cadena, quiero consultar las habitaciones de
+    // cada hotel junto con su tipo y capacidad,
+    // para conocer la oferta de habitaciones unicamente de las disponibles
+    @GetMapping ("/oferta/disponibles")
+    public List<OfertaHabitacionesForHotel> obtenerOfertaHabitacionHotelPorEstado(){
+        return habitacionJPA.getOfertaHabitacionesForHotel(Enum_EstadoHab.Disponible);
+    }
 }

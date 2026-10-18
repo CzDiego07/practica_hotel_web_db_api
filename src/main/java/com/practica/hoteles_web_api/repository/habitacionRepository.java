@@ -47,4 +47,24 @@ public interface habitacionRepository extends JpaRepository<Habitaciones, Intege
                     "ORDER BY h.nombre, ha.numero"
     )
     List<OfertaHabitacionesForHotel> getOfertaHabitacionesForHotel();
+
+    // Creamos la consulta para saber habitacion por Hotel y estado actual
+    // El inner Join Corresponde a como se nombro el la tabla con relacion ManyToOne
+    // Para el caso de hoteles (private Hoteles hotel)
+    // Se nombra la misma funcion, pero en este caso se puede especificar un estado especifico 
+    @Query("SELECT " +
+                    "h.nombre AS hotel, " +
+                    "ha.numero AS habitacion, " +
+                    "ha.piso AS piso, "+
+                    "ha.estado AS estado, " +
+                    "t.nombre AS tipo, " +
+                    "t.capacidad AS capacidad, " +
+                    "t.precio_base AS precio " +
+                    "FROM Habitaciones ha " +
+                    "INNER JOIN ha.hotel h " +
+                    "INNER JOIN ha.tipo t " +
+                    "WHERE ha.estado = :estado " +
+                    "ORDER BY h.nombre, ha.numero"
+    )
+    List<OfertaHabitacionesForHotel> getOfertaHabitacionesForHotel(@Param("estado") Enum_EstadoHab estado);
 }
