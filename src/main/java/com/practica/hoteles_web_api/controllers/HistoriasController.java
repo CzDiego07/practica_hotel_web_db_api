@@ -1,15 +1,18 @@
 package com.practica.hoteles_web_api.controllers;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.practica.hoteles_web_api.dtos.OfertaHabitacionesForHotel;
 import com.practica.hoteles_web_api.dtos.cantidadHabitacionesByTipo;
 import com.practica.hoteles_web_api.dtos.habitacionByEstado;
+import com.practica.hoteles_web_api.dtos.habitacionPorRangoMinMax;
 import com.practica.hoteles_web_api.models.Enum_EstadoHab;
 import com.practica.hoteles_web_api.repository.habitacionRepository;
 
@@ -51,8 +54,16 @@ public class HistoriasController {
     // 4. Historia: Como gerente de la cadena, quiero consultar la cantidad de
     // habitaciones por tipo y a que hotel pertenecen
     // para conocer que tipos de habitaciones se tienen en cada hotel
-    @GetMapping ("/cantidad")
-    public List<cantidadHabitacionesByTipo> obtenerCantidadHabitacionesPorTipo(){
+    @GetMapping("/cantidad")
+    public List<cantidadHabitacionesByTipo> obtenerCantidadHabitacionesPorTipo() {
         return habitacionJPA.getCantidadHabitacionesByTipo();
+    }
+
+    // 5. Historia: Como recepcionista, quiero consultar las habitaciones
+    // disponibles por un rango minimo y maximo de precio
+    // para ofrecer estas habitaciones a los clientes con un presupuesto limitado
+    @GetMapping ("/rangoPrecio")
+    public List<habitacionPorRangoMinMax> obtenerHabitacionPorRangoPrecio(@RequestParam BigDecimal min, @RequestParam  BigDecimal max){
+        return habitacionJPA.getHabitacionesByRangoPrecio(min, max);
     }
 }
