@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,8 +64,24 @@ public class HistoriasController {
     // 5. Historia: Como recepcionista, quiero consultar las habitaciones
     // disponibles por un rango minimo y maximo de precio
     // para ofrecer estas habitaciones a los clientes con un presupuesto limitado
-    @GetMapping ("/rangoPrecio")
-    public List<habitacionPorRangoMinMax> obtenerHabitacionPorRangoPrecio(@RequestParam BigDecimal min, @RequestParam  BigDecimal max){
-        return habitacionJPA.getHabitacionesByRangoPrecio(min, max);
+    @GetMapping("/rangoPrecio")
+    public ResponseEntity<?> obtenerHabitacionPorRangoPrecio(
+            @RequestParam BigDecimal min,
+            @RequestParam BigDecimal max) {
+
+        // Validar precios negativos
+        if (min.compareTo(BigDecimal.ZERO) < 0 || max.compareTo(BigDecimal.ZERO) < 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Los valores de precio no pueden ser negativos.");
+        }
+
+        // Validar que min sea menor o igual que max
+        if (min.compareTo(max) > 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("El precio mínimo no puede ser mayor que el precio máximo.");
+        }
+
+        List<habitacionPorRangoMinMax> resultados = habitacionJPA.getHabitacionesByRangoPrecio(min, max);
+        return ResponseEntity.ok(resultados);
     }
 }

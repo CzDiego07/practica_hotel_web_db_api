@@ -1,0 +1,254 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Sistema de Gestión Hotelera - Tipos Habitaciones</title>
+        <!-- Bootstrap 5 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    </head>
+    <body class="bg-light">
+        <!-- Navegación Principal -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" href="#">Cadena Hotelera</a>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/hoteles">Hoteles</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="#">Tipos Habitación</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/habitaciones">Habitaciones</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/consultas">Consultas</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="text-secondary">Gestión de Tipos de Habitación</h3>
+                <button class="btn btn-primary" onclick="abrirModalCrear()">+ Nuevo Tipo</button>
+            </div>
+
+            <div id="alertaError" class="alert alert-danger d-none" role="alert"></div>
+
+            <div id="alertaExito" class="alert alert-success alert-dismissible fade show d-none" role="alert">
+                <span id="mensajeExito"></span>
+                <button type="button" class="btn-close" onclick="cerrarAlertaExito()"></button>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Capacidad</th>
+                                <th>Descripción</th>
+                                <th>Precio Base</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTablaTipos">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Cargando registros...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Formulario Tipo Habitación -->
+        <div class="modal fade" id="modalTipo" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="modalTipoTitulo">Guardar Tipo</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formTipo">
+                            <input type="hidden" id="tipoId" />
+                            <div class="mb-3">
+                                <label class="form-label">Nombre Categoria *</label>
+                                <input type="text" id="nombre" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Capacidad (Personas) *</label>
+                                <input type="number" id="capacidad" class="form-control" min="1" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Descripción *</label>
+                                <textarea id="descripcion" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Precio Base ($) *</label>
+                                <input
+                                    type="number"
+                                    id="precio_base"
+                                    class="form-control"
+                                    step="0.01"
+                                    min="0"
+                                    required
+                                />
+                            </div>
+                        </form>
+                        <div id="alertaModal" class="alert alert-danger d-none"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="guardarTipo()">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            let modalBs;
+
+            document.addEventListener("DOMContentLoaded", () => {
+                modalBs = new bootstrap.Modal(document.getElementById("modalTipo"));
+                cargarTipos();
+            });
+
+            function cargarTipos() {
+                fetch("/api/tipo")
+                    .then(res => res.json())
+                    .then(data => {
+                        const cuerpo = document.getElementById("cuerpoTablaTipos");
+                        cuerpo.innerHTML = "";
+                        if (data.length === 0) {
+                            cuerpo.innerHTML =
+                                '<tr><td colspan="6" class="text-center text-muted">No existen tipos de habitación.</td></tr>';
+                            return;
+                        }
+                        data.forEach(t => {
+                            cuerpo.innerHTML += `
+                            <tr>
+                                <td>${t.id_tipo}</td>
+                                <td><strong>${t.nombre}</strong></td>
+                                <td>${t.capacidad} pers.</td>
+                                <td>${t.descripcion}</td>
+                                <td>$${Number(t.precio_base).toFixed(2)}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning me-1" onclick="editarTipo(${t.id_tipo})">Editar</button>
+                                    <button class="btn btn-sm btn-danger" onclick="eliminarTipo(${t.id_tipo})">Eliminar</button>
+                                </td>
+                            </tr>`;
+                        });
+                    });
+            }
+
+            function abrirModalCrear() {
+                document.getElementById("formTipo").reset();
+                document.getElementById("tipoId").value = "";
+                document.getElementById("modalTipoTitulo").innerText = "Nuevo Tipo de Habitación";
+                document.getElementById("alertaModal").classList.add("d-none");
+                modalBs.show();
+            }
+
+            function editarTipo(id) {
+                fetch(`/api/tipo/${id}`)
+                    .then(res => res.json())
+                    .then(t => {
+                        document.getElementById("tipoId").value = t.id_tipo;
+                        document.getElementById("nombre").value = t.nombre;
+                        document.getElementById("capacidad").value = t.capacidad;
+                        document.getElementById("descripcion").value = t.descripcion;
+                        document.getElementById("precio_base").value = t.precio_base;
+                        document.getElementById("modalTipoTitulo").innerText = "Editar Tipo de Habitación";
+                        document.getElementById("alertaModal").classList.add("d-none");
+                        modalBs.show();
+                    });
+            }
+
+            function mostrarExito(mensaje) {
+                const alerta = document.getElementById("alertaExito");
+                document.getElementById("mensajeExito").innerText = mensaje;
+                alerta.classList.remove("d-none");
+                setTimeout(() => alerta.classList.add("d-none"), 4000);
+            }
+
+            function cerrarAlertaExito() {
+                document.getElementById("alertaExito").classList.add("d-none");
+            }
+
+            function guardarTipo() {
+                const id = document.getElementById("tipoId").value;
+                const nombre = document.getElementById("nombre").value.trim();
+                const capacidad = parseInt(document.getElementById("capacidad").value);
+                const descripcion = document.getElementById("descripcion").value.trim();
+                const precio_base = parseFloat(document.getElementById("precio_base").value);
+                const alerta = document.getElementById("alertaModal");
+
+                alerta.classList.add("d-none");
+
+                if (!nombre || !descripcion || isNaN(capacidad) || isNaN(precio_base)) {
+                    alerta.innerText = "Por favor llena todos los campos obligatorios.";
+                    alerta.classList.remove("d-none");
+                    return;
+                }
+
+                if (capacidad <= 0) {
+                    alerta.innerText = "La capacidad debe ser un número entero positivo mayor a cero.";
+                    alerta.classList.remove("d-none");
+                    return;
+                }
+
+                if (precio_base < 0) {
+                    alerta.innerText = "El precio base no puede ser negativo.";
+                    alerta.classList.remove("d-none");
+                    return;
+                }
+
+                const payload = { nombre, capacidad, descripcion, precio_base };
+                const url = id ? `/api/tipo/actualizar/${id}` : "/api/tipo/guardar";
+                const mensajeOk = id
+                    ? "Tipo de habitación actualizado con éxito."
+                    : "Tipo de habitación registrado con éxito.";
+
+                fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                })
+                    .then(res => {
+                        if (!res.ok) throw new Error("Error al guardar el tipo de habitación.");
+                        return res.json();
+                    })
+                    .then(() => {
+                        modalBs.hide();
+                        cargarTipos();
+                        mostrarExito(mensajeOk);
+                    })
+                    .catch(err => {
+                        alerta.innerText = err.message;
+                        alerta.classList.remove("d-none");
+                    });
+            }
+
+            function eliminarTipo(id) {
+                if (!confirm("¿Está seguro de eliminar este tipo de habitación?")) return;
+
+                fetch(`/api/tipo/eliminar/${id}`, { method: "DELETE" })
+                    .then(res => {
+                        if (res.status === 204) {
+                            cargarTipos();
+                            mostrarExito("Tipo de habitación eliminado con éxito.");
+                        } else {
+                            throw new Error(
+                                "No se puede eliminar este tipo porque está siendo usado por habitaciones registradas.",
+                            );
+                        }
+                    })
+                    .catch(err => {
+                        const alertaPrincipal = document.getElementById("alertaError");
+                        alertaPrincipal.innerText = err.message;
+                        alertaPrincipal.classList.remove("d-none");
+                        setTimeout(() => alertaPrincipal.classList.add("d-none"), 5000);
+                    });
+            }
+        </script>
+    </body>
+</html>
