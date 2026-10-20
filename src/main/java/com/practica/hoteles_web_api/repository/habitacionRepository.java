@@ -88,13 +88,16 @@ public interface habitacionRepository extends JpaRepository<Habitaciones, Intege
             "t.capacidad AS capacidad, " +
             "ha.piso AS piso, " +
             "ha.numero AS numero, " +
+            "ha.estado AS estado, " +
             "t.precio_base AS precio " +
             "FROM Habitaciones ha " +
             "INNER JOIN ha.hotel h " +
             "INNER JOIN ha.tipo t " +
-            "WHERE t.precio_base BETWEEN :precioMin AND :precioMax " +
+            "WHERE t.precio_base BETWEEN :precioMin AND :precioMax AND ha.estado = :estado " +
             "ORDER BY t.precio_base ASC, h.nombre ASC")
     List<habitacionPorRangoMinMax> getHabitacionesByRangoPrecio(
             @Param("precioMin") BigDecimal precioMin,
-            @Param("precioMax") BigDecimal precioMax);
+            @Param("precioMax") BigDecimal precioMax,
+            @Param("estado") Enum_EstadoHab estado
+        );
 }

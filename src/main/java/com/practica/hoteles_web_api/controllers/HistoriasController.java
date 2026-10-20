@@ -81,7 +81,7 @@ public class HistoriasController {
                     .body("El precio mínimo no puede ser mayor que el precio máximo.");
         }
 
-        List<habitacionPorRangoMinMax> resultados = habitacionJPA.getHabitacionesByRangoPrecio(min, max);
+        List<habitacionPorRangoMinMax> resultados = habitacionJPA.getHabitacionesByRangoPrecio(min, max, Enum_EstadoHab.Disponible);
         return ResponseEntity.ok(resultados);
     }
 }
