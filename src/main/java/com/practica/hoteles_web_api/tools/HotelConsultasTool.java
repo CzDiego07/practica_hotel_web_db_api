@@ -58,7 +58,7 @@ public class HotelConsultasTool {
 
     // 5. Consulta: Habitaciones por rango de precio (Min y Max)
     @Bean
-    @Description("Consulta y filtra habitaciones disponibles cuyo precio base se encuentre entre un precio mínimo y un precio máximo.")
+    @Description("Consulta que permite obtener las habitaciones disponibles filtradas por un un rango minimo y maximo de precio o presupuesto")
     public Function<RangoPrecioRequest, List<habitacionPorRangoMinMax>> obtenerHabitacionPorRangoPrecio() {
         return request -> habitacionJPA.getHabitacionesByRangoPrecio(
                 request.min(), 
