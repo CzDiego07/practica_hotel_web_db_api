@@ -30,21 +30,21 @@ public class HotelConsultasTool {
 
     // 1. Consulta: Habitaciones Libres/Disponibles
     @Bean
-    @Description("Consulta la lista de habitaciones disponibles en los hoteles activos.")
+    @Description("Con esta Consulta obtienes una la lista de habitaciones disponibles en los hoteles que se encuentren actualmente activos activos.(Unicamente estado Disponible)")
     public Function<EmptyRequest, List<habitacionByEstado>> obtenerHabitacionesLibres() {
         return request -> habitacionJPA.getHabitacionByEstado(Enum_EstadoHab.Disponible);
     }
 
     // 2. Consulta: Oferta Global de Habitaciones por Hotel
     @Bean
-    @Description("Consulta la oferta general de habitaciones de cada hotel junto con su tipo, estado, piso y precio base.")
+    @Description("Esta Consulta permite obtener una  oferta general de habitaciones(todas las habitaciones registradas) de cada hotel junto con su tipo, estado, piso y precio base. Independientemente de si esta activo el hotel")
     public Function<EmptyRequest, List<OfertaHabitacionesForHotel>> obtenerOfertaHabitacionHotel() {
         return request -> habitacionJPA.getOfertaHabitacionesForHotel();
     }
 
     // 3. Consulta: Oferta Solo de Habitaciones Disponibles por Hotel
     @Bean
-    @Description("Consulta la oferta de habitaciones únicamente de aquellas que están con estado Disponible.")
+    @Description("Consulta la oferta de habitaciones únicamente de aquellas que están con estado Disponible . Independientemente de si los hoteles se encuentran activos.")
     public Function<EmptyRequest, List<OfertaHabitacionesForHotel>> obtenerOfertaHabitacionHotelPorEstado() {
         return request -> habitacionJPA.getOfertaHabitacionesForHotel(Enum_EstadoHab.Disponible);
     }
@@ -58,7 +58,7 @@ public class HotelConsultasTool {
 
     // 5. Consulta: Habitaciones por rango de precio (Min y Max)
     @Bean
-    @Description("Consulta que permite obtener las habitaciones disponibles filtradas por un un rango minimo y maximo de precio o presupuesto")
+    @Description("Esta Consulta que permite obtener las habitaciones disponibles que se tienen en los hoteles independiente de si esta activa o no el hotel, filtradas por un un rango minimo y maximo de precio o presupuesto")
     public Function<RangoPrecioRequest, List<habitacionPorRangoMinMax>> obtenerHabitacionPorRangoPrecio() {
         return request -> habitacionJPA.getHabitacionesByRangoPrecio(
                 request.min(), 
